@@ -108,3 +108,7 @@ You can test the above and other examples [here](https://dev.rejuve.bio/probmett
 - Riguzzi, F., Swift T. (2011). The PITA system: Tabling and answer subsumption for reasoning under uncertainty.
 - Riguzzi, F. (2018). Foundations of Probabilistic Logic Programming.
 - Bryant, R.E. (1986). Graph-Based Algorithms for Boolean Function Manipulation.
+
+*AI Usage Disclaimer*
+
+*Parts of this codebase have been written with the help of AI Coding tools, particularly the tests have been mainly generated with Claude Code. However, I've manually verified every piece of code before committing. Please open an issue if you find any bugs.*
