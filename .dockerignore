@@ -1,0 +1,5 @@
+.git
+.deps
+repos
+.vscode
+**/__pycache__
