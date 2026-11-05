@@ -1,0 +1,11 @@
+Dom(temperature): Real.
+Dom(humidity): Real.
+
+(temperature, humidity)($city) ~ {
+    0.6: temperature >= 28 and temperature <= 32 and humidity >= 40 and humidity <= 60,
+    0.4: temperature > 32 and temperature <= 38 and humidity >= 65 and humidity <= 85
+}.
+
+heat-alert($city) <- temperature($city) > 30, humidity($city) > 55.
+
+query(heat-alert(athens)).

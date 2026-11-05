@@ -1,0 +1,42 @@
+// Ten-region approximation of:
+//   0.60 * Normal(0, 1^2) + 0.40 * Normal(5, 2^2)
+// Region boundaries are the Gaussian deciles.
+Dom(coin): {heads, tails}.
+Dom(x1): Real.
+Dom(x2): Real.
+
+coin ~ {0.60: heads, 0.40: tails}.
+
+x1 ~ {
+    0.1: (-inf, -1.282],
+    0.1: (-1.282, -0.842],
+    0.1: (-0.842, -0.524],
+    0.1: (-0.524, -0.253],
+    0.1: (-0.253, 0.00],
+    0.1: (0.00, 0.253],
+    0.1: (0.253, 0.524],
+    0.1: (0.524, 0.842],
+    0.1: (0.842, 1.282],
+    0.1: (1.282, inf)
+}.
+
+x2 ~ {
+    0.1: (-inf, 2.437],
+    0.1: (2.437, 3.317],
+    0.1: (3.317, 3.951],
+    0.1: (3.951, 4.493],
+    0.1: (4.493, 5.00],
+    0.1: (5.00, 5.507],
+    0.1: (5.507, 6.049],
+    0.1: (6.049, 6.683],
+    0.1: (6.683, 7.563],
+    0.1: (7.563, inf)
+}.
+
+pos <- coin = heads, x1 > 0.
+pos <- coin = tails, x2 > 0.
+pos_x1 <- x1 > 0.
+pos_x2 <- x2 > 0.
+// Exact Gaussian-mixture probability: 0.698.
+// Ten-region PCLP approximation: [0.660, 0.70].
+query(pos).

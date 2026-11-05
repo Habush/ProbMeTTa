@@ -1,0 +1,31 @@
+// Five-region approximation of:
+//   0.6 * Normal(0, 1^2) + 0.4 * Normal(5, 2^2)
+// Region boundaries are the 0.2, 0.4, 0.6, and 0.8 Gaussian quantiles.
+Dom(coin): {heads, tails}.
+Dom(x1): Real.
+Dom(x2): Real.
+
+coin ~ {0.6: heads, 0.4: tails}.
+
+x1 ~ {
+    0.2: (-inf, -0.842],
+    0.2: (-0.842, -0.253],
+    0.2: (-0.253, 0.253],
+    0.2: (0.253, 0.842],
+    0.2: (0.842, inf)
+}.
+
+x2 ~ {
+    0.2: (-inf, 3.317],
+    0.2: (3.317, 4.493],
+    0.2: (4.493, 5.507],
+    0.2: (5.507, 6.683],
+    0.2: (6.683, inf)
+}.
+
+pos <- coin = heads, x1 > 0.
+pos <- coin = tails, x2 > 0.
+
+// Exact Gaussian-mixture probability: 0.698.
+// Five-region PCLP approximation: [0.560, 0.760].
+query(pos).

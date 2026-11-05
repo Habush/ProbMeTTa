@@ -1,0 +1,14 @@
+Dom(storm): {True, False}.
+Dom(delay): Real.
+
+storm ~ Bernoulli(0.25).
+
+delay ~ {
+    0.6: [0, 1],
+    0.4: (1, 3]
+}.
+
+late-delivery <- storm.
+late-delivery <- delay > 2.
+
+query(late-delivery).

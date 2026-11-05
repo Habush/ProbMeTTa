@@ -1,0 +1,21 @@
+// Ball color has residual mass, while weight is known only by interval.
+Dom(color): {red, blue, green}.
+Dom(weight): Pos.
+
+color ~ {0.5: red, 0.2: blue}. // 0.3 ~ {red, blue, green}
+
+weight ~ {
+    0.6: [4, 8],
+    0.3: (8, 12],
+    0.1: (12, inf)
+}.
+
+heavy-draw($color) <- color = $color, weight > 5.
+very-heavy-draw($color) <- color = $color, weight > 10.
+
+query(heavy-draw(red)). // (0.2, 0.8)
+query(heavy-draw(blue)). // (0.08, 0.5)
+query(heavy-draw(green)). // (0, 0.3)
+query(heavy-draw(yellow)). // (0, 0)
+
+query(very-heavy-draw(red)). // (0.05, 0.32)

@@ -1,0 +1,17 @@
+// An urn contains red, blue, and green balls.
+// The remaining mass 0.3 may have any color in the declared domain.
+Dom(color): {red, blue, green}.
+
+color ~ {0.5: red, 0.2: blue}.
+
+draw($color) <- color = $color.
+
+draw_ball <- draw(red). 
+draw_ball <- draw(blue).
+draw_ball <- draw(green).
+
+query(draw(red)).
+query(draw(blue)).
+query(draw(green)).
+query(draw(yellow)).
+query(draw_ball).
