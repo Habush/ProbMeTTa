@@ -1,5 +1,5 @@
-!(import! &self (library lib_import))
-!(git-import! "https://github.com/Habush/ProbMeTTa.git")
+; !(import! &self (library lib_import))
+; !(git-import! "https://github.com/Habush/ProbMeTTa.git")
 
 !(import! &self (library lib_bdd))
 
@@ -27,8 +27,9 @@
         (apply-bdd bdd-and (bdd-var-node $id)  $trace)))
 
 
-(= (=> (, . $goals) $head)
-    (add-atom &self (rule $head $goals)))
+(= (=> $body $head)
+    (let $goals (cdr-atom $body)
+        (add-atom &self (rule $head $goals))))
 
 ;; Execute a probabilistic goal
 (= (prob-goal $goal $trace)
@@ -56,10 +57,11 @@
     (if (== $a $b) (empty) $trace))
 
 ;; Execute a conjunction of goals, threading the trace
-(= (exec-conj () $trace) $trace)
-(= (exec-conj ($g . $rest) $trace)
-    (let $t1 (prob-goal $g $trace)
-        (exec-conj $rest $t1)))
+(= (exec-conj $goals $trace)
+    (if (== $goals ())
+        $trace
+        (let $t1 (prob-goal (car-atom $goals) $trace)
+            (exec-conj (cdr-atom $goals) $t1))))
 ;; Build the WMC environment from all registered probabilistic facts
 (= (prob-wmc-env)
     (collapse (match &prob-facts (prob-fact $id $prob $_) ($id $prob))))
@@ -77,20 +79,24 @@
                 (add-atom &self (rule $head $rule-body))
                 ($new-idx $new-cm $new-neg))))
 
-(= (build-ad-rules (($prob $head) . $rest) $gid $idx $cm $neg-prefix $body)
-    (if (== $rest ())
-        ;; Last element
-        (if (< (+ $cm $prob) 1) ;add implicit null
-            (let $_ (build-ad-helper ($prob $head) $gid $idx $cm $neg-prefix $body) (empty))
-            (let $body-final (append $neg-prefix $body)
-                (add-atom &self (rule $head $body-final))))
-        ;; Not last — process and recurse
-        (let ($new-idx $new-cm $new-neg) (build-ad-helper ($prob $head) $gid $idx $cm $neg-prefix $body)
-            (build-ad-rules $rest $gid $new-idx $new-cm $new-neg $body))))
+(= (build-ad-rules $alts $gid $idx $cm $neg-prefix $body)
+    (let* (($alt (car-atom $alts))
+           ($prob (car-atom $alt))
+           ($head (car-atom (cdr-atom $alt)))
+           ($rest (cdr-atom $alts)))
+        (if (== $rest ())
+            ;; Last element
+            (if (< (+ $cm $prob) 1) ;add implicit null
+                (let $_ (build-ad-helper ($prob $head) $gid $idx $cm $neg-prefix $body) (empty))
+                (let $body-final (append $neg-prefix $body)
+                    (add-atom &self (rule $head $body-final))))
+            ;; Not last — process and recurse
+            (let ($new-idx $new-cm $new-neg) (build-ad-helper ($prob $head) $gid $idx $cm $neg-prefix $body)
+                (build-ad-rules $rest $gid $new-idx $new-cm $new-neg $body)))))
 
-(= (:: (($prob $head) . $rest))
+(= (:: $alts)
     (let $gid (new-id)
-        (build-ad-rules (cons ($prob $head) $rest) $gid 1 0 () ())))
+        (build-ad-rules $alts $gid 1 0 () ())))
 
 ;; :: stores template + rule. No BDD variable yet.
 (= (:: $prob $goal)
@@ -102,11 +108,13 @@
     (let $gid (new-id)
         (build-ad-rules $alts $gid 1 0 () $body)))
 
-(= (::=> $prob $head (, . $body))
-    (::adr (($prob $head)) $body))
+(= (::=> $prob $head $body-expr)
+    (let $body (cdr-atom $body-expr)
+        (::adr (($prob $head)) $body)))
 
-(= (::=> $heads (, . $body))
-    (::adr $heads $body))
+(= (::=> $heads $body-expr)
+    (let $body (cdr-atom $body-expr)
+        (::adr $heads $body)))
 
 (= (fact $f) (add-atom &self (rule $f ())))
 
@@ -143,17 +151,17 @@
             (?prob $g))))
 
 ;; Top-level: probability of P(Query | Evidence)
-(= (?prob-given $query ($head . $rest))
+(= (?prob-given $query $evidence)
     (if (is-ground $query)
         (let* (($query-bdd (?prob-bdd $query))
-                ($evid-bdd (?prob-bdd-ev (cons $head $rest)))
+                ($evid-bdd (?prob-bdd-ev $evidence))
                 ($conj-bdd (apply-bdd bdd-and $query-bdd $evid-bdd))
                 ($env (prob-wmc-env))
                 ($conj-prob (bdd-wmc $conj-bdd $env))
                 ($evid-prob (bdd-wmc $evid-bdd $env)))
             (round-to (/ $conj-prob $evid-prob) 5))
         (let $q (match &self (rule $query $_) $query)
-            (?prob-given $q (cons $head $rest)))))
+            (?prob-given $q $evidence))))
 
 ;; Helper Test function that takes into account decimal points
 (= (test-prob $actual $expected)

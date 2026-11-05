@@ -1,6 +1,4 @@
-!(import! &self (library lib_import))
-!(git-import! "https://github.com/Habush/ProbMeTTa.git")
-!(import &self (library lib_prob))
+!(import! &self (library lib_prob))
 
 ;; Test: Overlapping rules (multiple derivation paths)
 ;; P(d) = 1 - (1-0.3*0.5)*(1-0.4) = 0.49
