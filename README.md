@@ -1,6 +1,6 @@
 # ProbMeTTa
 
-A probabilistic logic programming library for MeTTa implementing supporting both **ProbLog-style programs** and *hybrid probabilistic programs* through **Probabilistic Constraint Logic Programming (PCLP)**.
+A probabilistic logic programming library for MeTTa supporting both **ProbLog-style programs** and *hybrid probabilistic programs* through **Probabilistic Constraint Logic Programming (PCLP)**.
 
 ProbLog-style programs support probabilistic facts, probabilistic rules,
 annotated disjunctions, negation-as-failure, and evidence conditioning.
