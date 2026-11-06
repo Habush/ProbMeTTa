@@ -10,9 +10,11 @@ weight ~ {
     0.1: (12, inf)
 }.
 
+light-draw($color) <- color = $color, weight <= 5.
 heavy-draw($color) <- color = $color, weight > 5.
 very-heavy-draw($color) <- color = $color, weight > 10.
 
+query(light-draw(red)). // (0, 0.48)
 query(heavy-draw(red)). // (0.2, 0.8)
 query(heavy-draw(blue)). // (0.08, 0.5)
 query(heavy-draw(green)). // (0, 0.3)

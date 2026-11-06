@@ -2,6 +2,22 @@
 set -euo pipefail
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+DEPS="$ROOT/.deps"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --install-dir)
+            DEPS="${2:?--install-dir requires a directory}"
+            shift 2
+            ;;
+        *)
+
+            printf 'Unknown argument: %s\n' "$1" >&2
+            exit 1
+            ;;
+    esac
+done
+
 DEPS=$(realpath -m -- "${1:-$ROOT/.deps}")
 SWIPL_VERSION=9.3.34
 SWIPL="$DEPS/swipl/bin/swipl"
